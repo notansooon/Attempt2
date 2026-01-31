@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Journal entry model
+model JournalEntry {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  date      DateTime @default(now())
+  title     String?
+  content   String
+  mood      Int      @default(3) // 1-5 scale: 1=very low, 5=great
+  energy    Int      @default(3) // 1-5 scale
+  anxiety   Int      @default(3) // 1-5 scale: 1=none, 5=severe
+  sleep     Float?   // hours of sleep
+  notes     String?  // additional notes
+
+  // AI analysis results stored per entry
+  aiAnalysis    String?   // JSON string of AI analysis
+  aiAnalyzedAt  DateTime?
+
+  @@map("journal_entries")
+}
+
+// Reminder model
+model Reminder {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String?
+  category    String   // medication, feeding, selfcare, appointment, other
+
+  // Scheduling
+  time        String   // Time in HH:MM format
+  days        String   // JSON array of days: ["monday", "tuesday", etc] or ["daily"]
+  isActive    Boolean  @default(true)
+
+  // Notification tracking
+  lastSentAt  DateTime?
+
+  @@map("reminders")
+}
+
+// AI Insights - stores periodic analysis of all journal entries
+model AiInsight {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  type         String   // trend, alert, suggestion, summary
+  severity     String   // info, warning, concern
+  title        String
+  content      String
+  suggestions  String?  // JSON array of suggestions
+  dismissed    Boolean  @default(false)
+
+  // Reference period
+  periodStart  DateTime
+  periodEnd    DateTime
+
+  @@map("ai_insights")
+}
+
+// User settings
+model Settings {
+  id                String   @id @default(cuid())
+  phoneNumber       String?
+  notificationsEnabled Boolean @default(true)
+  analysisFrequency String   @default("daily") // daily, weekly
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("settings")
+}
