@@ -40,7 +40,6 @@ A supportive companion app for the postpartum journey, featuring AI-powered jour
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd postpartum-navigator
 ```
 
 2. Install dependencies:
